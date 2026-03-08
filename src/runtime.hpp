@@ -1,7 +1,6 @@
 #ifndef RUNTIME_H
 #define RUNTIME_H
 #include <vengeance/bindings.h>
-#include <vengeance/vengeance.h>
 
 using namespace vitex::core;
 using namespace vitex::compute;
@@ -36,7 +35,7 @@ namespace asx
 	struct environment_config
 	{
 		inline_args commandline;
-		unordered_set<string> addons;
+		hash_set<string> addons;
 		function_delegate at_exit;
 		file_entry file;
 		string name;
@@ -56,7 +55,7 @@ namespace asx
 		environment_config() : this_compiler(nullptr), library("__anonymous__"), auto_schedule(-1), auto_console(false), auto_stop(false), inlined(true)
 		{
 		}
-		void parse(int args_count, char** args_data, const unordered_set<string>& flags = { })
+		void parse(int args_count, char** args_data, const hash_set<string>& flags = { })
 		{
 			commandline = os::process::parse_args(args_count, args_data, (size_t)args_format::key_value | (size_t)args_format::flag_value | (size_t)args_format::stop_if_no_match, flags);
 		}
@@ -70,8 +69,8 @@ namespace asx
 
 	struct system_config
 	{
-		unordered_map<string, std::pair<string, string>> functions;
-		unordered_map<access_option, bool> permissions;
+		hash_map<string, std::pair<string, string>> functions;
+		hash_map<access_option, bool> permissions;
 		vector<std::pair<string, bool>> libraries;
 		vector<std::pair<string, int32_t>> settings;
 		vector<string> system_addons;

@@ -1,7 +1,6 @@
 #ifndef BUILDER_H
 #define BUILDER_H
 #include "runtime.hpp"
-#include <vengeance/vengeance.h>
 
 namespace asx
 {
@@ -22,10 +21,10 @@ namespace asx
 	public:
 		static status_code compile_into_addon(system_config& config, environment_config& env, virtual_machine* vm, const std::string_view& name, string& output);
 		static status_code import_into_addon(environment_config& env, virtual_machine* vm, const std::string_view& name, string& output);
-		static status_code initialize_into_addon(system_config& config, environment_config& env, virtual_machine* vm, const unordered_map<string, uint32_t>& settings);
+		static status_code initialize_into_addon(system_config& config, environment_config& env, virtual_machine* vm, const hash_map<string, uint32_t>& settings);
 		static status_code pull_addon_repository(system_config& config, environment_config& env);
-		static status_code compile_into_executable(system_config& config, environment_config& env, virtual_machine* vm, const unordered_map<string, uint32_t>& settings);
-		static unordered_map<string, uint32_t> get_default_settings();
+		static status_code compile_into_executable(system_config& config, environment_config& env, virtual_machine* vm, const hash_map<string, uint32_t>& settings);
+		static hash_map<string, uint32_t> get_default_settings();
 		static string get_system_version();
 		static string get_addon_target_library(environment_config& env, virtual_machine* vm, const std::string_view& name, bool* is_vm);
 		static bool is_addon_target_exists(environment_config& env, virtual_machine* vm, const std::string_view& name, bool nested = false);
@@ -34,7 +33,7 @@ namespace asx
 		static status_code execute_git(system_config& config, const std::string_view& command);
 		static status_code execute_cmake(system_config& config, const std::string_view& command);
 		static bool execute_command(system_config& config, const std::string_view& label, const std::string_view& command, int success_exit_code);
-		static bool append_template(const unordered_map<string, string>& keys, const std::string_view& target_path, const std::string_view& template_path);
+		static bool append_template(const hash_map<string, string>& keys, const std::string_view& target_path, const std::string_view& template_path);
 		static bool append_byte_code(system_config& config, environment_config& env, const std::string_view& path);
 		static bool append_dependencies(environment_config& env, virtual_machine* vm, const std::string_view& target_directory);
 		static bool append_vitex(system_config& config);
@@ -46,7 +45,7 @@ namespace asx
 		static string get_local_targets_directory(environment_config& env, const std::string_view& name);
 		static string get_addon_target(environment_config& env, const std::string_view& name);
 		static schema* get_addon_info(environment_config& env, const std::string_view& name);
-		static unordered_map<string, string> get_build_keys(system_config& config, environment_config& env, virtual_machine* vm, const unordered_map<string, uint32_t>& settings, bool is_addon);
+		static hash_map<string, string> get_build_keys(system_config& config, environment_config& env, virtual_machine* vm, const hash_map<string, uint32_t>& settings, bool is_addon);
 	};
 
 	class control
@@ -58,10 +57,10 @@ namespace asx
 	class templates
 	{
 	private:
-		static unordered_map<string, string>* files;
+		static hash_map<string, string>* files;
 
 	public:
-		static option<string> fetch(const unordered_map<string, string>& keys, const std::string_view& path);
+		static option<string> fetch(const hash_map<string, string>& keys, const std::string_view& path);
 		static void cleanup();
 	};
 }

@@ -1,6 +1,6 @@
 #include "app.h"
+#include <vengeance/vengeance.h>
 #include <signal.h>
-#include "interface.hpp"
 
 namespace asx
 {
@@ -292,12 +292,13 @@ namespace asx
 				}
 				else if (stringify::starts_with(data, ".help"))
 				{
-					terminal->write_line("  .mode   - switch between registering and executing the code");
-					terminal->write_line("  .help   - show available commands");
-					terminal->write_line("  .editor - enter editor mode");
-					terminal->write_line("  .exit   - exit interactive mode");
-					terminal->write_line("  .use    - import system addons by name (comma separated list)");
-					terminal->write_line("  *       - anything else will be interpreted as script code");
+					terminal->write_line("  .mode       - switch between registering and executing the code");
+					terminal->write_line("  .help       - show available commands");
+					terminal->write_line("  .editor     - enter editor mode");
+					terminal->write_line("  .exit       - exit interactive mode");
+					terminal->write_line("  .use        - import system addons by name (comma separated list)");
+					terminal->write_line("  .predefined - export as.predefined based on current interface (path expected)");
+					terminal->write_line("  *           - anything else will be interpreted as script code");
 					continue;
 				}
 				else if (stringify::starts_with(data, ".use"))
@@ -329,6 +330,18 @@ namespace asx
 				{
 					terminal->write_line("  editor mode: you may write multiple lines of code (ctrl+d to finish)\n");
 					editor = true;
+					continue;
+				}
+				else if (stringify::starts_with(data, ".predefined"))
+				{
+					string maybe_path = data.substr(11);
+					auto path = os::path::resolve(stringify::trim(maybe_path));
+					if (path)
+					{
+						string symbols = vm->export_predefined_symbols();
+						os::file::write(*path, (uint8_t*)symbols.data(), symbols.size());
+						terminal->write_line("  as.predefined saved to: " + *path + "\n");
+					}
 					continue;
 				}
 				else if (data == ".exit")
@@ -820,7 +833,7 @@ namespace asx
 		auto& target = commands[string(category)];
 		target.push_back(std::move(command));
 	}
-	exit_status environment::execute_argument(const unordered_set<string>& names)
+	exit_status environment::execute_argument(const hash_set<string>& names)
 	{
 		for (auto& next : env.commandline.args)
 		{

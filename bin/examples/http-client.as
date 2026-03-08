@@ -8,7 +8,7 @@ int main()
     try
     {
         /* resolve the address */
-        socket_address address = co_await dns::get().lookup_deferred("jsonplaceholder.typicode.com", "443", dns_type::connect);
+        socket_address address = co_await dns::get().lookup_deferred("jsonplaceholder.typicode.com", "443", dns_check::connect);
 
         /* connect to server using async io and verify up to 100 tls peers (default) */
         co_await client.connect_async(address, 100);

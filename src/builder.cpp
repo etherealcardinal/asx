@@ -1,8 +1,8 @@
 #include "builder.h"
 #include "code.hpp"
-#include <iostream>
+#include <vengeance/vengeance.h>
 #define REPOSITORY_SOURCE "https://github.com/"
-#define REPOSITORY_TARGET_VENGEANCE "https://github.com/romanpunia/vengeance"
+#define REPOSITORY_TARGET_VENGEANCE "https://github.com/etherealcardinal/vengeance"
 #define REPOSITORY_FILE_INDEX "addon.as"
 #define REPOSITORY_FILE_ADDON "addon.json"
 
@@ -141,7 +141,7 @@ namespace asx
 		VI_ERR("%s import error: " REPOSITORY_FILE_ADDON " file; %s not acceptable", name.data(), type.c_str());
 		return status_code::configuration_error;
 	}
-	status_code builder::initialize_into_addon(system_config& config, environment_config& env, virtual_machine* vm, const unordered_map<string, uint32_t>& settings)
+	status_code builder::initialize_into_addon(system_config& config, environment_config& env, virtual_machine* vm, const hash_map<string, uint32_t>& settings)
 	{
 		if (!is_directory_empty(env.addon))
 		{
@@ -149,7 +149,7 @@ namespace asx
 			return status_code::configuration_error;
 		}
 
-		unordered_map<string, string> keys = get_build_keys(config, env, vm, settings, true);
+		hash_map<string, string> keys = get_build_keys(config, env, vm, settings, true);
 		if (env.mode == "vm")
 		{
 			vector<string> files =
@@ -169,7 +169,7 @@ namespace asx
 		}
 		else if (env.mode == "native")
 		{
-			unordered_map<string, string> files =
+			hash_map<string, string> files =
 			{
 				{ "addon/CMakeLists.txt", "" },
 				{ "addon/addon.json", "" },
@@ -249,7 +249,7 @@ namespace asx
 
 		return status_code::OK;
 	}
-	status_code builder::compile_into_executable(system_config& config, environment_config& env, virtual_machine* vm, const unordered_map<string, uint32_t>& settings)
+	status_code builder::compile_into_executable(system_config& config, environment_config& env, virtual_machine* vm, const hash_map<string, uint32_t>& settings)
 	{
 		string vitex_directory = get_global_vitex_path();
 		if (!append_vitex(config))
@@ -258,8 +258,8 @@ namespace asx
 			return status_code::command_error;
 		}
 
-		unordered_map<string, string> keys = get_build_keys(config, env, vm, settings, false);
-		unordered_map<string, string> files =
+		hash_map<string, string> keys = get_build_keys(config, env, vm, settings, false);
+		hash_map<string, string> files =
 		{
 			{ "executable/CMakeLists.txt", "" },
 			{ "executable/vcpkg.json", "" },
@@ -325,9 +325,9 @@ namespace asx
 
 		return status_code::OK;
 	}
-	unordered_map<string, uint32_t> builder::get_default_settings()
+	hash_map<string, uint32_t> builder::get_default_settings()
 	{
-		unordered_map<string, uint32_t> settings;
+		hash_map<string, uint32_t> settings;
 		settings["default_stack_size"] = (uint32_t)features::init_stack_size;
 		settings["default_callstack_size"] = (uint32_t)features::init_call_stack_size;
 		settings["callstack_size"] = (uint32_t)features::max_call_stack_size;
@@ -437,7 +437,7 @@ namespace asx
         
         return success;
 	}
-	bool builder::append_template(const unordered_map<string, string>& keys, const std::string_view& target_path, const std::string_view& template_path)
+	bool builder::append_template(const hash_map<string, string>& keys, const std::string_view& target_path, const std::string_view& template_path)
 	{
 		auto file = templates::fetch(keys, template_path);
 		if (!file)
@@ -648,7 +648,7 @@ namespace asx
 		auto result = schema::from_json(*data);
 		return result ? *result : nullptr;
 	}
-	unordered_map<string, string> builder::get_build_keys(system_config& config, environment_config& env, virtual_machine* vm, const unordered_map<string, uint32_t>& settings, bool is_addon)
+	hash_map<string, string> builder::get_build_keys(system_config& config, environment_config& env, virtual_machine* vm, const hash_map<string, uint32_t>& settings, bool is_addon)
 	{
 		string config_permissions_array;
 		for (auto& item : config.permissions)
@@ -767,7 +767,7 @@ namespace asx
 		string vitex_path = get_global_vitex_path();
 		stringify::replace(vitex_path, '\\', '/');
 
-		unordered_map<string, string> keys;
+		hash_map<string, string> keys;
 		keys["BUILDER_ENV_AUTO_SCHEDULE"] = to_string(env.auto_schedule);
 		keys["BUILDER_ENV_AUTO_CONSOLE"] = env.auto_console ? "true" : "false";
 		keys["BUILDER_ENV_AUTO_STOP"] = env.auto_stop ? "true" : "false";
@@ -799,12 +799,12 @@ namespace asx
 		return it != config.permissions.end() ? it->second : os::control::has(option);
 	}
 
-	option<string> templates::fetch(const unordered_map<string, string>& keys, const std::string_view& path)
+	option<string> templates::fetch(const hash_map<string, string>& keys, const std::string_view& path)
 	{
 		if (!files)
 		{
 #ifdef HAS_CODE_BUNDLE
-			files = memory::init<unordered_map<string, string>>();
+			files = memory::init<hash_map<string, string>>();
 			code_bundle::foreach(nullptr, [](void*, const char* path, const char* file, unsigned int file_size)
 			{
 				files->insert(std::make_pair(string(path), string(file, file_size)));
@@ -827,5 +827,5 @@ namespace asx
 	{
 		memory::deinit(files);
 	}
-	unordered_map<string, string>* templates::files = nullptr;
+	hash_map<string, string>* templates::files = nullptr;
 }

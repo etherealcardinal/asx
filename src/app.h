@@ -2,10 +2,8 @@
 #define APP_H
 #include "builder.h"
 #include <vengeance/bindings.h>
-#include <vitex/network.h>
 
 using namespace vitex::layer;
-using namespace vitex::network;
 
 namespace asx
 {
@@ -21,9 +19,9 @@ namespace asx
 	class environment : public singleton<environment>
 	{
 	public:
-		unordered_map<string, vector<environment_command>> commands;
-		unordered_map<string, uint32_t> settings;
-		unordered_set<string> flags;
+		hash_map<string, vector<environment_command>> commands;
+		hash_map<string, uint32_t> settings;
+		hash_set<string> flags;
 		environment_config env;
 		program_entrypoint entrypoint;
 		system_config config;
@@ -46,7 +44,7 @@ namespace asx
 		void add_default_commands();
 		void add_default_settings();
 		void add_command(const std::string_view& category, const std::string_view& name, const std::string_view& description, bool is_flag_only, const command_callback& callback);
-		exit_status execute_argument(const unordered_set<string>& names);
+		exit_status execute_argument(const hash_set<string>& names);
 		environment_command* find_argument(const std::string_view& name);
 		void print_introduction(const char* label);
 		void print_help();

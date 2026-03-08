@@ -76,7 +76,7 @@ int main()
         event loop that does not allow parallel execution by
         design.
     */
-    socket_address address = resolver.lookup("0.0.0.0", "8080", dns_type::listen);
+    socket_address address = resolver.lookup("0.0.0.0", "8080", dns_check::listen);
     socket@ listener = socket();
     listener.open(address);
     listener.bind(address);
